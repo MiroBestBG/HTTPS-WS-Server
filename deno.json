@@ -1,6 +1,6 @@
 {
 	"tasks": {
-		"api-server-start": "deno run --watch -A ./src/API/index.ts",
+		"api-server": "deno run --watch -A ./src/API/index.ts",
 		"api-client": "deno run --watch -A  --unsafely-ignore-certificate-errors ./src/API/client.ts",
 		"api-client2": "deno run --watch -A  --unsafely-ignore-certificate-errors ./src/API/client2.ts",
 		"api-ws-test": "deno test --watch -A  --unsafely-ignore-certificate-errors ./src/API/tests/websocket-args.ts",
@@ -8,6 +8,7 @@
 	},
 	"imports": {
 		"@std/assert": "jsr:@std/assert@1",
+		"@std/dotenv": "jsr:@std/dotenv@^0.225.5",
 		"@types/jsonwebtoken": "npm:@types/jsonwebtoken@^9.0.10",
 		"https": "npm:https@^1.0.0",
 		"jsonwebtoken": "npm:jsonwebtoken@^9.0.2",
