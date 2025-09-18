@@ -2,3 +2,5 @@
 *db
 *.env
 *.idea
+*src_init
+*src

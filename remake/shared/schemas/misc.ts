@@ -1,6 +1,6 @@
 const baseDir = Deno.cwd().toString();
-export const isValidBaseDir = existsSync(`${Deno.cwd()}/deno.json`);
-const DIRECTORIES = {
+
+export const DIR = {
 	MAIN: baseDir,
 	SRC: `${baseDir}/src`,
 	API: {
@@ -16,7 +16,6 @@ const DIRECTORIES = {
 	},
 } as const;
 
-export const DIR: typeof DIRECTORIES = isValidBaseDir ? DIRECTORIES : (Object.values(DIRECTORIES).map(() => undefined) as unknown as typeof DIRECTORIES);
 export const debugType = {
 	MAJOR_ERROR: "MAJOR_ERROR",
 	MINOR_ERROR: "MINOR_ERROR",
@@ -110,23 +109,22 @@ export const permissionsMap = {
 
 	"server/status": "server:status",
 } as const;
-import { existsSync } from "node:fs";
-import { Session } from "../utils/api.ts";
-export function hasPermission(session: Session, permission: keyof typeof permissionsMap, scope?: "global" | string): boolean {
-	const permKey: keyof typeof session.scopes.global = permissionsMap[permission];
-	const now = Date.now() / 1000;
+// import { existsSync } from "node:fs";
+// import { Session } from "../utils/api.ts";
+// export function hasPermission(session: Session, permission: keyof typeof permissionsMap, scope?: "global" | string): boolean {
+// 	const permKey: keyof typeof session.scopes.global = permissionsMap[permission];
+// 	const now = Date.now() / 1000;
 
-	const globalExpiry = session.scopes.global[permKey];
-	if (typeof globalExpiry === "number" && globalExpiry > now) {
-		return true;
-	}
+// 	const globalExpiry = session.scopes.global[permKey];
+// 	if (typeof globalExpiry === "number" && globalExpiry > now) {
+// 		return true;
+// 	}
 
-	if (scope && session.scopes[scope]) {
-		const scopeExpiry = session?.scopes?.[scope]?.[permKey];
-		if (typeof scopeExpiry === "number" && scopeExpiry > now) {
-			return true;
-		}
-	}
-
-	return false;
-}
+// 	if (scope && session.scopes[scope]) {
+// 		const scopeExpiry = session?.scopes?.[scope]?.[permKey];
+// 		if (typeof scopeExpiry === "number" && scopeExpiry > now) {
+// 			return true;
+// 		}
+// 	}
+// 	return false;
+// }

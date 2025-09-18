@@ -34,7 +34,7 @@ export class Cryptography {
 			results.privateKey = rsaKeys.privateKey;
 		}
 
-		if (!type || type === "AES") {
+		if (type === "AES") {
 			results.aesKey = await crypto.subtle.generateKey(
 				{
 					name: "AES-GCM",

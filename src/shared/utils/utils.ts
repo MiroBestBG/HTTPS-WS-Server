@@ -1,4 +1,4 @@
-import { DebugLogOptions, debugType, debugTypes, emojiMap, terminalColor } from "../schemas/misc.ts";
+import { DebugLogOptions, debugType, debugTypes, DIR, emojiMap, terminalColor } from "../schemas/misc.ts";
 export function arrayBufferToBase64(buffer: ArrayBuffer): string {
 	const bytes = new Uint8Array(buffer);
 	let binary = "";
@@ -56,3 +56,13 @@ export class Utilities {
 		console.info(`${mainLine}${formattedFlags}`);
 	}
 }
+
+export const isValidRuntimeDirectory = (toastError?: boolean): boolean => {
+	const isValid = DIR.MAIN != undefined;
+	if (isValid) return true;
+
+	if (toastError) {
+		Utilities.debugLog(debugType.WARN, "Invalid Runtime Directory", { isSevere: true, fileDir: DIR.MAIN });
+	}
+	return false;
+};

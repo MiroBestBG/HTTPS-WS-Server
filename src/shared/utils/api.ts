@@ -1,4 +1,5 @@
-import { API_Methods } from "../../shared/schemas/api.d.ts";
+// deno-lint-ignore-file
+import { API_Methods } from "../schemas/api.ts";
 import Cryptography from "./encryption.ts";
 import jwt from "npm:jsonwebtoken";
 import { misc } from "./config.ts";
@@ -36,7 +37,7 @@ export const SessionStatus = {
 };
 export type SessionData = {
 	id?: number;
-	status: string;
+	status: (typeof SessionStatus)[keyof typeof SessionStatus];
 	createdBy: string;
 
 	title: string;
@@ -54,7 +55,7 @@ export type SessionData = {
 
 export type Session = {
 	id: number;
-	status: string;
+	status: (typeof SessionStatus)[keyof typeof SessionStatus];
 	createdBy: string;
 
 	title: string;
@@ -72,7 +73,7 @@ export type Session = {
 
 export type SessionCreateArgs_NoStrict = {
 	id?: number;
-	status?: string;
+	status?: (typeof SessionStatus)[keyof typeof SessionStatus];
 	createdBy?: string;
 
 	title?: string;
@@ -116,6 +117,7 @@ export class Sessions {
 		if (!this.initialised) await this.init();
 		const res = (await this.db.queryValuesDb(dbFilenames.config, `SELECT * FROM ${tableNames.config.sessions} WHERE ${this.db.objectToQueryCondition(args, ["Sanitise"])}`, Object.values(args), devMode || this.devMode)).flat()[0] as unknown as SessionData;
 		if (!res) return undefined;
+		console.info(res);
 		res.scopes = JSON.parse(res.scopes);
 		res.allowedMethods = JSON.parse(res.allowedMethods);
 		res.allowedStages = JSON.parse(res.allowedStages);
@@ -146,34 +148,22 @@ export class Sessions {
 		});
 
 		const response = await this.db.insertDb(dbFilenames.config, tableNames.config.sessions, res, ["storeDb"]);
-
 		return response != undefined ? [undefined, `Something went wrong.\n${response}`] : [res as unknown as SessionData, undefined];
-
-		//[(res as unknown as SessionData, response != undefined ? `Something went wrong.\n${response}` : undefined)];
 	}
 
-	// async patch(options: { jwtKey?: string; id?: number; devMode?: boolean }, session: SessionCreateArgs_NoStrict): Promise<[SessionData | undefined, string | undefined]> {
-	// 	if (!this.initialised) await this.init();
-	// 	const sessionToPatch = await this.get(options, options.devMode ?? false);
+	async patch(options: { jwtKey?: string; id?: number; devMode?: boolean }, session: SessionCreateArgs_NoStrict): Promise<[SessionData | undefined, string | undefined]> {
+		if (!this.initialised) await this.init();
+		const sessionToPatch = await this.get(options, options.devMode ?? false);
 
-	// 	if (!sessionToPatch) return [undefined, "Session not found"];
+		if (!sessionToPatch) return [undefined, "Session not found"];
 
-	// 	for (const key in session) {
-	// 		if (key == "jwtKey" || key == "id" || key == "key") continue;
-	// 		// deno-lint-ignore ban-ts-comment
-	// 		// @ts-ignore
-	// 		sessionToPatch[key] = session[key];
-	// 	}
+		sessionToPatch.jwtKey = jwt.sign(sessionToPatch, Buffer.from(misc.config.apiToken, "base64"), {
+			expiresIn: sessionToPatch.expiresAt,
+		});
 
-	// 	sessionToPatch.jwtKey = jwt.sign(sessionToPatch, Buffer.from(misc.config.apiToken, "base64"), {
-	// 		expiresIn: sessionToPatch.expiresAt,
-	// 	});
-
-	// 	console.info(sessionToPatch);
-	// 	const response = await this.db.insertDb(dbFilenames.config, tableNames.config.sessions, sessionToPatch, ["storeDb", "replace"]);
-	// 	console.info(response);
-	// 	return response != undefined ? [undefined, `Something went wrong.\n${response}`] : [response as unknown as SessionData, undefined];
-	// }
+		const response = await this.db.insertDb(dbFilenames.config, tableNames.config.sessions, sessionToPatch as any, ["storeDb", "replace"]);
+		return response != undefined ? [undefined, `Something went wrong.\n${response}`] : [response as unknown as SessionData, undefined];
+	}
 
 	async delete(session: SessionCreateArgs_NoStrict, devMode?: boolean): Promise<[boolean, string | undefined]> {
 		if (!this.initialised) await this.init();

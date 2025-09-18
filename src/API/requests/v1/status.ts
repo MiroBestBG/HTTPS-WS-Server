@@ -1,12 +1,13 @@
-import { API_Methods } from "../../../shared/schemas/api.d.ts";
+import { API_Methods } from "../../../shared/schemas/api.ts";
 import { permissionsMap } from "../../../shared/schemas/misc.ts";
 import { misc } from "../../../shared/utils/config.ts";
 
 export default {
-	method: ["GET"],
-	version: 1,
-	route: "server/status",
-
+	data: {
+		method: ["GET"],
+		version: 1,
+		route: "server/status",
+	},
 	exec: (): { status: number; message: string; data: unknown } => {
 		return {
 			status: 200,
@@ -18,4 +19,4 @@ export default {
 		};
 	},
 	// deno-lint-ignore no-explicit-any
-} as { method: Array<API_Methods>; route: keyof typeof permissionsMap; version: number; exec: () => Promise<{ status: number; message: string; data: any }> | { status: number; message: string; data: any } };
+} as { data: { method: Array<API_Methods>; route: keyof typeof permissionsMap; version: number }; exec: () => Promise<{ status: number; message: string; data: any }> | { status: number; message: string; data: any } };

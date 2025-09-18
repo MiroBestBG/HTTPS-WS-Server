@@ -1,6 +1,27 @@
 import { DIR } from "./misc.ts";
 /* Layout of all databases */
 export const DatabaseSchema = [
+	/* DEBUG DB (USED FOR TESTS) */
+	{
+		filename: `${DIR.DB}/localTests.db`,
+		referenceName: "localTests",
+		tables: [
+			{
+				tableName: "test",
+				columns: [
+					{
+						case: "INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT",
+						id: "TEXT NOT NULL",
+						displayName: "TEXT NOT NULL",
+						createdAt: "NUMBER NOT NULL",
+					},
+				],
+			},
+		],
+		name: "localTests.db",
+	},
+
+	/* MAIN DATABASES */
 	{
 		filename: `${DIR.DB}/config.db`,
 		referenceName: "config",

@@ -1,13 +1,15 @@
 console.clear();
-import { CONFIG_FILE, API_Request_Files } from "../shared/schemas/api.d.ts";
+import { CONFIG_FILE, API_Request_Files } from "../shared/schemas/api.ts";
 import { DIR, CallbackCode, getDescriptionByCode, debugType } from "../shared/schemas/misc.ts";
 import { walk } from "https://deno.land/std/fs/walk.ts";
 import { misc } from "../shared/utils/config.ts";
 import { JsonWebTokenError, JwtPayload, TokenExpiredError, verify } from "npm:jsonwebtoken";
 import { Buffer } from "node:buffer";
 import { Session, Sessions, SessionStatus } from "../shared/utils/api.ts";
-import { Utilities } from "../shared/utils/utils.ts";
+import { isValidRuntimeDirectory, Utilities } from "../shared/utils/utils.ts";
 
+console.log(DIR);
+if (!isValidRuntimeDirectory()) throw new Error("Invalid Runtime Directory");
 function verifyJWT(token: string, secret?: string) {
 	try {
 		// Will throw if malformed, expired, or signature invalid
@@ -236,4 +238,4 @@ export class API {
 }
 
 const api = new API(await JSON.parse(Deno.readTextFileSync(`${DIR.DB}/config.json`)));
-api.start();
+if (isValidRuntimeDirectory()) api.start();
